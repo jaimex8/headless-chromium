@@ -7,7 +7,7 @@ To build the application, you have to clone it first,
 ```
 git clone
 cd docker-chromium-armhf
-docker build -t hthiemann/chromium-armhf .
+docker build -t jaimex8/chromium-armhf .
 ```
 
 ## Run the container:
@@ -23,7 +23,7 @@ docker volume create chromium_home
 ``` 
 After creating the volume, you can run the image using the following command:
 ```
-docker pull hthiemann/docker-chromium-armhf
+docker pull jaimex8/docker-chromium-armhf
 
 docker run --rm --privileged \
  -e DISPLAY=unix$DISPLAY \
@@ -34,7 +34,7 @@ docker run --rm --privileged \
  --ipc=host \
  --device /dev/dri \
  --group-add video \
- hthiemann/docker-chromium-armhf
+ jaimex8/docker-chromium-armhf
 ```
 Or simply use the script chromium-armhf:
 ```

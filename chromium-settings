@@ -17,4 +17,5 @@ CHROMIUM_FLAGS="$CHROMIUM_FLAGS \
 --enable-gpu-rasterization \
 --enable-oop-rasterization \
 --flag-switches-end \
+--headless \
 --load-extension=/usr/lib/chromium-browser/netflix-1080p"

@@ -14,7 +14,7 @@ else
 fi
 
 echo "Searching for Docker image ..."
-DOCKER_IMAGE_ID=$(docker images -q hthiemann/chromium-armhf:latest | head -n 1)
+DOCKER_IMAGE_ID=$(docker images -q jaimex8/chromium-armhf:latest | head -n 1)
 echo "Found and using ${DOCKER_IMAGE_ID}"
 
 docker run --rm --privileged \

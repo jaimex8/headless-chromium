@@ -1,5 +1,5 @@
-FROM docker.io/arm32v7/ubuntu:bionic
-MAINTAINER Furkan Kardame <furkan@fkardame.com>
+FROM docker.io/arm32v7/debian:latest
+MAINTAINER Debian
 
 # Install dependencies
 ENV DEBIAN_FRONTEND noninteractive
@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libx11-data libxau6 libxcb-render0 libxcb-shm0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 \
   libxext6 libxfixes3 libxi6 libxinerama1 libxml2 libxrandr2 libxrender1 libxss1 libxtst6 shared-mime-info ucf \
   x11-common xdg-utils libpulse0 pulseaudio-utils wget libatk-bridge2.0-0 libatspi2.0-0 libgtk-3-0 \
-  mesa-va-drivers mesa-vdpau-drivers mesa-utils libosmesa6 libegl1-mesa libwayland-egl1-mesa libgl1-mesa-dri
+  mesa-va-drivers mesa-vdpau-drivers mesa-utils libosmesa6 libegl1-mesa libwayland-egl1-mesa libgl1-mesa-dri \
+  openssh-client xterm qemu binfmt-support qemu-user-static
 
 # Add chromium dependencies
 ADD dependencies/chromium-browser_78.0.3904.97-0ubuntu0.16.04.1_armhf.deb chromium-browser.deb
@@ -38,7 +39,7 @@ ADD widevine/netflix-1080p-1.20.1 /usr/lib/chromium-browser/netflix-1080p
 COPY pulse-client.conf /etc/pulse/client.conf
 
 # Set up the user
-ENV UNAME mediaguy
+ENV UNAME chromeuser
 RUN export UNAME=$UNAME UID=1000 GID=1000 && \
     mkdir -p "/home/${UNAME}" && \
     echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
