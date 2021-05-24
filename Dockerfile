@@ -1,3 +1,4 @@
+#!/bin/bash
 FROM docker.io/arm32v7/debian:latest
 MAINTAINER Debian
 
