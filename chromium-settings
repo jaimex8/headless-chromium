@@ -1,21 +1,16 @@
 # Default settings for chromium-browser. This file is sourced by /bin/sh
-# from /usr/bin/chromium-browser
+# from /usr/bin/chromium
 CHROMIUM_FLAGS="$CHROMIUM_FLAGS \
---disable-low-res-tiling \
---num-raster-threads=6 \
---enable-webgl \
---profiler-timing=0 \
---disable-composited-antialiasing \
---test-type \
---show-component-extension-options \
---ignore-gpu-blacklist \
---use-gl=egl \
---ppapi-flash-path=/usr/lib/chromium-browser/pepper/libpepflashplayer.so \
---ppapi-flash-version=32.0.0.255 \
---enable-pinch \
+--debug \   
+--enable-logging=stderr \
+--v=1 \
+--allow-insecure-localhost \
+--disable-dev-shm-usage \
+--remote-debugging-address=0.0.0.0 \
+--remote-debugging-port=9222 \
+--start-in-incognito \
+--disable-gpu \
+--user-data-dir=/home/chromium/downloads \
+--single-process \
 --flag-switches-begin \
---enable-gpu-rasterization \
---enable-oop-rasterization \
 --flag-switches-end \
---headless \
---load-extension=/usr/lib/chromium-browser/netflix-1080p"

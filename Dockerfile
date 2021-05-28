@@ -1,56 +1,114 @@
-#!/bin/sh
+#!/bin/bash
 
-FROM docker.io/arm32v7/debian:latest
-MAINTAINER Debian
+FROM arm32v7/node:latest
 
 # Install dependencies
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get install --yes --verbose-versions --no-install-recommends \
-  git fontconfig fontconfig-config fonts-dejavu-core gconf-service gconf2-common \
-  libasn1-8-heimdal libasound2 libasound2-data libatk1.0-0 libatk1.0-data libavahi-client3 libavahi-common-data \
-  libavahi-common3 libcairo2 libcups2 libdatrie1 libdbus-1-3 libdbus-glib-1-2 libexpat1 libfontconfig1 \
-  libfreetype6 libgconf-2-4 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgmp10 \
-  libgnutls30 libgraphite2-3 libgssapi-krb5-2 libgssapi3-heimdal libgtk2.0-0 \
-  libgtk2.0-common libharfbuzz0b libhcrypto4-heimdal libheimbase1-heimdal libheimntlm0-heimdal libhogweed4 \
-  libhx509-5-heimdal libjbig0 libk5crypto3 libkeyutils1 \
-  libkrb5-26-heimdal libkrb5-3 libkrb5support0 libldap-2.4-2 libnettle6 libnspr4 libnss3 \
-  libp11-kit0 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpixman-1-0 libpng16-16 libroken18-heimdal \
-  libsasl2-2 libsasl2-modules-db libsqlite3-0 libtasn1-6 libthai-data libthai0 libtiff5 libwind0-heimdal libx11-6 \
-  libx11-data libxau6 libxcb-render0 libxcb-shm0 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 \
-  libxext6 libxfixes3 libxi6 libxinerama1 libxml2 libxrandr2 libxrender1 libxss1 libxtst6 shared-mime-info ucf \
-  x11-common xdg-utils libpulse0 pulseaudio-utils wget libatk-bridge2.0-0 libatspi2.0-0 libgtk-3-0 \
-  mesa-va-drivers mesa-vdpau-drivers mesa-utils libosmesa6 libegl1-mesa libwayland-egl1-mesa libgl1-mesa-dri
+RUN apt-get update && apt-get install \
+    --yes --no-install-recommends \
+    curl wget nano gdebi sudo apt-transport-https gnupg \ 
+    && apt-get update && apt-get install \
+    --yes --no-install-recommends \
+    ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils \
+	&& apt-get update && apt-get install \
+    --yes --no-install-recommends \
+	fontconfig \
+	fonts-ipafont-gothic \
+	fonts-wqy-zenhei \
+	fonts-thai-tlwg \
+	fonts-kacst \
+	fonts-symbola \
+	fonts-noto \
+	fonts-freefont-ttf
 
-# Add chromium dependencies
-ADD dependencies/chromium-browser_78.0.3904.97-0ubuntu0.16.04.1_armhf.deb chromium-browser.deb
-ADD dependencies/chromium-codecs-ffmpeg-extra_78.0.3904.97-0ubuntu0.16.04.1_armhf.deb chromium-codecs.deb
-RUN echo "Updating Chromium..." && dpkg -i chromium-codecs.deb && dpkg -i chromium-browser.deb
+#RUN mkdir -pv /var/run/dbus
 
-# Add settings
-#ADD chromium-settings /etc/chromium-browser/default
+#RUN touch /var/run/dbus/system_bus_socket
 
-# Install Widevine
-ADD widevine/libwidevinecdm.so /usr/lib/chromium-browser
-ADD widevine/PepperFlash /usr/lib/chromium-browser/pepper
+RUN mkdir -pv /etc/inti.d
 
-# Install Netflix 1080P Extension
-ADD widevine/netflix-1080p-1.20.1 /usr/lib/chromium-browser/netflix-1080p
+#RUN sysctl -w kernel.unprivileged_userns_clone=1
+
+#COPY dependencies/chromium-common_90.0.4430.212-1~deb10u1_armhf.deb \
+#chromium-common.deb
+#COPY dependencies/chromium-driver_90.0.4430.212-1~deb10u1_armhf.deb \
+#chrome-driver.deb
+#COPY dependencies/chromium-sandbox_90.0.4430.212-1~deb10u1_armhf.deb \
+#chromium-sandbox.deb
+#COPY dependencies/chromium-shell_90.0.4430.212-1~deb10u1_armhf.deb \
+#chromium-shell.deb
+COPY dependencies/chromium_90.0.4430.212-1~deb10u1_armhf.deb \
+chromium.deb
+
+#xvfb workaround
+#COPY dependencies/xvfbd /etc/init.d/xvfbd
+#RUN chmod 0755 /etc/init.d/xvfbd
+#RUN update-rc.d xvfbd defaults
+
+#RUN echo "Installing Dependencies (Chromium Common)" && \
+#dpkg --unpack chromium-common.deb
+
+#RUN echo "Installing Dependencies (Chromium Driver)" && \
+#dpkg --unpack chrome-driver.deb
+
+#RUN echo "Installing Dependencies (Chromium Sandbox)" && \
+#dpkg --unpack chromium-sandbox.deb
+
+#RUN echo "Installing Dependencies (Chromium Shell)" && \
+#dpkg --unpack chromium-shell.deb
+
+RUN echo "Updating Chromium..." && \
+dpkg --unpack chromium.deb
+
+# Install packages
+RUN apt-get install -fy
+
+# Copy chromium settings
+#COPY chromium-settings /.config/chrome-flags.conf
+ENV CHROMIUM_FLAGS="$CHROMIUM_FLAGS --debug \   
+--enable-logging=stderr \
+--headless \
+--v=1 \
+--disable-dev-shm-usage \
+--allow-insecure-localhost \
+--remote-debugging-address=0.0.0.0 \
+--remote-debugging-port=9222 \
+--start-in-incognito \
+--disable-gpu \
+--user-data-dir=/home/chromium/downloads \
+--single-process"
 
 # Copy Pulseaudio config
-COPY pulse-client.conf /etc/pulse/client.conf
+#COPY pulse-client.conf /etc/pulse/client.conf
 
-# Set up the user
-ENV UNAME chromeuser
-RUN export UNAME=$UNAME UID=1000 GID=1000 && \
-    mkdir -p "/home/${UNAME}" && \
-    echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
-    echo "${UNAME}:x:${UID}:" >> /etc/group && \
-    mkdir -p /etc/sudoers.d && \
-    echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${UNAME} && \
-    chmod 0440 /etc/sudoers.d/${UNAME} && \
-    chown ${UID}:${GID} -R /home/${UNAME} && \
-    gpasswd -a ${UNAME} audio
-USER $UNAME
-ENV HOME /home/${UNAME}
+#Avoid idealTree error
+WORKDIR /home/chromium
 
-CMD ["/usr/bin/chromium-browser", "--user-agent='Mozilla/5.0 (X11; CrOS armv7l 12607.82.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.123 Safari/537.36'"]
+COPY dependencies/puppet-start.js ./puppeteer.js
+COPY dependencies/puppet-start.min.js ./puppeteer-min.js
+COPY dependencies/cdp.js ./cdp.js
+COPY dependencies/cdp.min.js ./cdp.min.js
+
+RUN npm i npm@7.14.0 \
+    && npm i chrome-remote-interface \
+    && npm i puppeteer \
+    # Add Chrome as a user
+    && groupadd -r chromium && useradd -r -g chromium -G audio,video chromium \
+    && mkdir -p /home/chromium/downloads \
+    && chown -R chromium:chromium /home/chromium \
+    && chown -R chromium:chromium /home/chromium/node_modules
+
+EXPOSE 9222
+ENV CHROME_IPC_LOGGING=1
+ENV CHROME_LOG_FILE=/chromium.log
+ENV DBUS_SESSION_BUS_ADDRESS="disabled"
+ENV DISPLAY=:1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_DOWNLOAD_PATH=/home/chromium/downloads
+#ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chromium-devel-sandbox
+
+USER chromium
+
+#ENTRYPOINT [ "/bin/bash -c" ]
+CMD ["/bin/bash", "chromium"]
+#CMD [ "npm", "start" ]
+#CMD [ "node", "puppeteer.js" ]
