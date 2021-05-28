@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+echo "Set host IP for Pulseaudio"
+addrip="$(docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}')"
+
+echo "Enabling XHost Forwarding"
+xhost +local:docker
+
+echo -n "Pulseaudio native-protocol-tcp: "
+if pactl list modules|grep native-protocol-tcp >/dev/null; then
+  echo Checked
+else
+  pactl load-module module-native-protocol-tcp >/dev/null && echo Loaded || echo Failed
+fi
+
+echo "Searching for Docker image ..."
+DOCKER_IMAGE_ID=$(docker images -q jaimex8/chromium-armhf:latest | head -n 1)
+echo "Found and using ${DOCKER_IMAGE_ID}"
+
+docker run --rm --privileged \
+ -e DISPLAY=unix$DISPLAY \
+ -e PULSE_SERVER=tcp:${addrip}:4713 \
+ -e PULSE_COOKIE=`COOKIE_FILE="$HOME/.config/pulse/cookie"; COOKIE_FROM_FILE=$(test -f "${COOKIE_FILE}" && xxd -c 256 -p "${COOKIE_FILE}"); test "$(LC_ALL=C pax11publish -d | grep --color=never -Po '(?<=^Cookie: ).*')" != "${COOKIE_FROM_FILE}" && echo ${COOKIE_FROM_FILE}` \
+ -v chromium_home:/home \
+ -v /tmp/.X11-unix:/tmp/.X11-unix \
+ -v /dev:/dev -v /run:/run \
+ -v /etc/machine-id:/etc/machine-id \
+ --ipc=host \
+  ${DOCKER_IMAGE_ID}
